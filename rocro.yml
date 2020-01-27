@@ -1,0 +1,23 @@
+inspecode:
+
+  grep:         ## for any-languages
+    thresholds:
+      num-issues: 999
+
+  jscpd:        ## for TypeScript
+    thresholds:
+      num-issues: 999
+
+  misspell:     ## for any-languages
+    auto-fix: true
+    thresholds:
+      num-issues: 999
+
+  prettier:     ## for TypeScript
+    auto-fix: true
+    thresholds:
+      num-issues: 999
+
+  tslint:       ## for TypeScript
+    thresholds:
+      num-issues: 999
