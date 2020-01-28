@@ -2,22 +2,23 @@ inspecode:
 
   grep:         ## for any-languages
     thresholds:
-      num-issues: 999
+      num-issues: 0
 
   jscpd:        ## for TypeScript
     thresholds:
-      num-issues: 999
+      num-issues: 17
 
   misspell:     ## for any-languages
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 0
 
   prettier:     ## for TypeScript
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 35
 
   tslint:       ## for TypeScript
+    auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 0
