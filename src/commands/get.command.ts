@@ -1,107 +1,119 @@
-import * as program from 'commander';
-import * as fet from 'node-fetch';
+import * as program from "commander";
+import * as fet from "node-fetch";
 
-import { CipherType } from 'jslib/enums/cipherType';
+import { CipherType } from "jslib/enums/cipherType";
 
-import { ApiService } from 'jslib/abstractions/api.service';
-import { AuditService } from 'jslib/abstractions/audit.service';
-import { CipherService } from 'jslib/abstractions/cipher.service';
-import { CollectionService } from 'jslib/abstractions/collection.service';
-import { CryptoService } from 'jslib/abstractions/crypto.service';
-import { FolderService } from 'jslib/abstractions/folder.service';
-import { SearchService } from 'jslib/abstractions/search.service';
-import { TotpService } from 'jslib/abstractions/totp.service';
-import { UserService } from 'jslib/abstractions/user.service';
+import { ApiService } from "jslib/abstractions/api.service";
+import { AuditService } from "jslib/abstractions/audit.service";
+import { CipherService } from "jslib/abstractions/cipher.service";
+import { CollectionService } from "jslib/abstractions/collection.service";
+import { CryptoService } from "jslib/abstractions/crypto.service";
+import { FolderService } from "jslib/abstractions/folder.service";
+import { SearchService } from "jslib/abstractions/search.service";
+import { TotpService } from "jslib/abstractions/totp.service";
+import { UserService } from "jslib/abstractions/user.service";
 
-import { Organization } from 'jslib/models/domain/organization';
+import { Organization } from "jslib/models/domain/organization";
 
-import { Card } from 'jslib/models/export/card';
-import { Cipher } from 'jslib/models/export/cipher';
-import { Collection } from 'jslib/models/export/collection';
-import { Field } from 'jslib/models/export/field';
-import { Folder } from 'jslib/models/export/folder';
-import { Identity } from 'jslib/models/export/identity';
-import { Login } from 'jslib/models/export/login';
-import { LoginUri } from 'jslib/models/export/loginUri';
-import { SecureNote } from 'jslib/models/export/secureNote';
+import { Card } from "jslib/models/export/card";
+import { Cipher } from "jslib/models/export/cipher";
+import { Collection } from "jslib/models/export/collection";
+import { Field } from "jslib/models/export/field";
+import { Folder } from "jslib/models/export/folder";
+import { Identity } from "jslib/models/export/identity";
+import { Login } from "jslib/models/export/login";
+import { LoginUri } from "jslib/models/export/loginUri";
+import { SecureNote } from "jslib/models/export/secureNote";
 
-import { CipherView } from 'jslib/models/view/cipherView';
-import { CollectionView } from 'jslib/models/view/collectionView';
-import { FolderView } from 'jslib/models/view/folderView';
+import { CipherView } from "jslib/models/view/cipherView";
+import { CollectionView } from "jslib/models/view/collectionView";
+import { FolderView } from "jslib/models/view/folderView";
 
-import { CipherString } from 'jslib/models/domain/cipherString';
+import { CipherString } from "jslib/models/domain/cipherString";
 
-import { Response } from 'jslib/cli/models/response';
-import { MessageResponse } from 'jslib/cli/models/response/messageResponse';
-import { StringResponse } from 'jslib/cli/models/response/stringResponse';
+import { Response } from "jslib/cli/models/response";
+import { MessageResponse } from "jslib/cli/models/response/messageResponse";
+import { StringResponse } from "jslib/cli/models/response/stringResponse";
 
-import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionResponse } from '../models/response/collectionResponse';
-import { FolderResponse } from '../models/response/folderResponse';
-import { OrganizationCollectionResponse } from '../models/response/organizationCollectionResponse';
-import { OrganizationResponse } from '../models/response/organizationResponse';
-import { TemplateResponse } from '../models/response/templateResponse';
+import { CipherResponse } from "../models/response/cipherResponse";
+import { CollectionResponse } from "../models/response/collectionResponse";
+import { FolderResponse } from "../models/response/folderResponse";
+import { OrganizationCollectionResponse } from "../models/response/organizationCollectionResponse";
+import { OrganizationResponse } from "../models/response/organizationResponse";
+import { TemplateResponse } from "../models/response/templateResponse";
 
-import { OrganizationCollectionRequest } from '../models/request/organizationCollectionRequest';
+import { OrganizationCollectionRequest } from "../models/request/organizationCollectionRequest";
 
-import { SelectionReadOnly } from '../models/selectionReadOnly';
+import { SelectionReadOnly } from "../models/selectionReadOnly";
 
-import { CliUtils } from '../utils';
+import { CliUtils } from "../utils";
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from "jslib/misc/utils";
 
 export class GetCommand {
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private totpService: TotpService,
-        private auditService: AuditService, private cryptoService: CryptoService,
-        private userService: UserService, private searchService: SearchService,
-        private apiService: ApiService) { }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private collectionService: CollectionService,
+        private totpService: TotpService,
+        private auditService: AuditService,
+        private cryptoService: CryptoService,
+        private userService: UserService,
+        private searchService: SearchService,
+        private apiService: ApiService
+    ) {}
 
-    async run(object: string, id: string, cmd: program.Command): Promise<Response> {
+    async run(
+        object: string,
+        id: string,
+        cmd: program.Command
+    ): Promise<Response> {
         if (id != null) {
             id = id.toLowerCase();
         }
 
         switch (object.toLowerCase()) {
-            case 'item':
+            case "item":
                 return await this.getCipher(id);
-            case 'username':
+            case "username":
                 return await this.getUsername(id);
-            case 'password':
+            case "password":
                 return await this.getPassword(id);
-            case 'uri':
+            case "uri":
                 return await this.getUri(id);
-            case 'totp':
+            case "totp":
                 return await this.getTotp(id);
-            case 'exposed':
+            case "exposed":
                 return await this.getExposed(id);
-            case 'attachment':
+            case "attachment":
                 return await this.getAttachment(id, cmd);
-            case 'folder':
+            case "folder":
                 return await this.getFolder(id);
-            case 'collection':
+            case "collection":
                 return await this.getCollection(id);
-            case 'org-collection':
+            case "org-collection":
                 return await this.getOrganizationCollection(id, cmd);
-            case 'organization':
+            case "organization":
                 return await this.getOrganization(id);
-            case 'template':
+            case "template":
                 return await this.getTemplate(id);
-            case 'fingerprint':
+            case "fingerprint":
                 return await this.getFingerprint(id);
             default:
-                return Response.badRequest('Unknown object.');
+                return Response.badRequest("Unknown object.");
         }
     }
 
-    private async getCipherView(id: string): Promise<CipherView | CipherView[]> {
+    private async getCipherView(
+        id: string
+    ): Promise<CipherView | CipherView[]> {
         let decCipher: CipherView = null;
         if (Utils.isGuid(id)) {
             const cipher = await this.cipherService.get(id);
             if (cipher != null) {
                 decCipher = await cipher.decrypt();
             }
-        } else if (id.trim() !== '') {
+        } else if (id.trim() !== "") {
             let ciphers = await this.cipherService.getAllDecrypted();
             ciphers = this.searchService.searchCiphersBasic(ciphers, id);
             if (ciphers.length > 1) {
@@ -128,7 +140,7 @@ export class GetCommand {
                 }
             }
             if (Array.isArray(decCipher)) {
-                return Response.multipleResults(decCipher.map((c) => c.id));
+                return Response.multipleResults(decCipher.map(c => c.id));
             }
         }
         const res = new CipherResponse(decCipher);
@@ -136,19 +148,23 @@ export class GetCommand {
     }
 
     private async getUsername(id: string) {
-        const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.username));
+        const cipherResponse = await this.getCipher(
+            id,
+            c =>
+                c.type === CipherType.Login &&
+                !Utils.isNullOrWhitespace(c.login.username)
+        );
         if (!cipherResponse.success) {
             return cipherResponse;
         }
 
         const cipher = cipherResponse.data as CipherResponse;
         if (cipher.type !== CipherType.Login) {
-            return Response.badRequest('Not a login.');
+            return Response.badRequest("Not a login.");
         }
 
         if (Utils.isNullOrWhitespace(cipher.login.username)) {
-            return Response.error('No username available for this login.');
+            return Response.error("No username available for this login.");
         }
 
         const res = new StringResponse(cipher.login.username);
@@ -156,19 +172,23 @@ export class GetCommand {
     }
 
     private async getPassword(id: string) {
-        const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.password));
+        const cipherResponse = await this.getCipher(
+            id,
+            c =>
+                c.type === CipherType.Login &&
+                !Utils.isNullOrWhitespace(c.login.password)
+        );
         if (!cipherResponse.success) {
             return cipherResponse;
         }
 
         const cipher = cipherResponse.data as CipherResponse;
         if (cipher.type !== CipherType.Login) {
-            return Response.badRequest('Not a login.');
+            return Response.badRequest("Not a login.");
         }
 
         if (Utils.isNullOrWhitespace(cipher.login.password)) {
-            return Response.error('No password available for this login.');
+            return Response.error("No password available for this login.");
         }
 
         const res = new StringResponse(cipher.login.password);
@@ -176,20 +196,29 @@ export class GetCommand {
     }
 
     private async getUri(id: string) {
-        const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && c.login.uris != null && c.login.uris.length > 0 &&
-                c.login.uris[0].uri !== '');
+        const cipherResponse = await this.getCipher(
+            id,
+            c =>
+                c.type === CipherType.Login &&
+                c.login.uris != null &&
+                c.login.uris.length > 0 &&
+                c.login.uris[0].uri !== ""
+        );
         if (!cipherResponse.success) {
             return cipherResponse;
         }
 
         const cipher = cipherResponse.data as CipherResponse;
         if (cipher.type !== CipherType.Login) {
-            return Response.badRequest('Not a login.');
+            return Response.badRequest("Not a login.");
         }
 
-        if (cipher.login.uris == null || cipher.login.uris.length === 0 || cipher.login.uris[0].uri === '') {
-            return Response.error('No uri available for this login.');
+        if (
+            cipher.login.uris == null ||
+            cipher.login.uris.length === 0 ||
+            cipher.login.uris[0].uri === ""
+        ) {
+            return Response.error("No uri available for this login.");
         }
 
         const res = new StringResponse(cipher.login.uris[0].uri);
@@ -197,32 +226,41 @@ export class GetCommand {
     }
 
     private async getTotp(id: string) {
-        const cipherResponse = await this.getCipher(id,
-            (c) => c.type === CipherType.Login && !Utils.isNullOrWhitespace(c.login.totp));
+        const cipherResponse = await this.getCipher(
+            id,
+            c =>
+                c.type === CipherType.Login &&
+                !Utils.isNullOrWhitespace(c.login.totp)
+        );
         if (!cipherResponse.success) {
             return cipherResponse;
         }
 
         const cipher = cipherResponse.data as CipherResponse;
         if (cipher.type !== CipherType.Login) {
-            return Response.badRequest('Not a login.');
+            return Response.badRequest("Not a login.");
         }
 
         if (Utils.isNullOrWhitespace(cipher.login.totp)) {
-            return Response.error('No TOTP available for this login.');
+            return Response.error("No TOTP available for this login.");
         }
 
         const totp = await this.totpService.getCode(cipher.login.totp);
         if (totp == null) {
-            return Response.error('Couldn\'t generate TOTP code.');
+            return Response.error("Couldn't generate TOTP code.");
         }
 
         const canAccessPremium = await this.userService.canAccessPremium();
         if (!canAccessPremium) {
             const originalCipher = await this.cipherService.get(cipher.id);
-            if (originalCipher == null || originalCipher.organizationId == null ||
-                !originalCipher.organizationUseTotp) {
-                return Response.error('Premium status is required to use this feature.');
+            if (
+                originalCipher == null ||
+                originalCipher.organizationId == null ||
+                !originalCipher.organizationUseTotp
+            ) {
+                return Response.error(
+                    "Premium status is required to use this feature."
+                );
             }
         }
 
@@ -236,14 +274,16 @@ export class GetCommand {
             return passwordResponse;
         }
 
-        const exposedNumber = await this.auditService.passwordLeaked((passwordResponse.data as StringResponse).data);
+        const exposedNumber = await this.auditService.passwordLeaked(
+            (passwordResponse.data as StringResponse).data
+        );
         const res = new StringResponse(exposedNumber.toString());
         return Response.success(res);
     }
 
     private async getAttachment(id: string, cmd: program.Command) {
-        if (cmd.itemid == null || cmd.itemid === '') {
-            return Response.badRequest('--itemid <itemid> required.');
+        if (cmd.itemid == null || cmd.itemid === "") {
+            return Response.badRequest("--itemid <itemid> required.");
         }
 
         const itemId = cmd.itemid.toLowerCase();
@@ -253,45 +293,74 @@ export class GetCommand {
         }
 
         const cipher = await this.getCipherView(itemId);
-        if (cipher == null || Array.isArray(cipher) || cipher.attachments.length === 0) {
-            return Response.error('No attachments available for this item.');
+        if (
+            cipher == null ||
+            Array.isArray(cipher) ||
+            cipher.attachments.length === 0
+        ) {
+            return Response.error("No attachments available for this item.");
         }
 
-        const attachments = cipher.attachments.filter((a) => a.id.toLowerCase() === id ||
-            (a.fileName != null && a.fileName.toLowerCase().indexOf(id) > -1));
+        const attachments = cipher.attachments.filter(
+            a =>
+                a.id.toLowerCase() === id ||
+                (a.fileName != null &&
+                    a.fileName.toLowerCase().indexOf(id) > -1)
+        );
         if (attachments.length === 0) {
-            return Response.error('Attachment `' + id + '` was not found.');
+            return Response.error("Attachment `" + id + "` was not found.");
         }
         if (attachments.length > 1) {
-            return Response.multipleResults(attachments.map((a) => a.id));
+            return Response.multipleResults(attachments.map(a => a.id));
         }
 
         if (!(await this.userService.canAccessPremium())) {
             const originalCipher = await this.cipherService.get(cipher.id);
-            if (originalCipher == null || originalCipher.organizationId == null) {
-                return Response.error('Premium status is required to use this feature.');
+            if (
+                originalCipher == null ||
+                originalCipher.organizationId == null
+            ) {
+                return Response.error(
+                    "Premium status is required to use this feature."
+                );
             }
         }
 
-        const response = await fet.default(new fet.Request(attachments[0].url, { headers: { cache: 'no-cache' } }));
+        const response = await fet.default(
+            new fet.Request(attachments[0].url, {
+                headers: { cache: "no-cache" }
+            })
+        );
         if (response.status !== 200) {
-            return Response.error('A ' + response.status + ' error occurred while downloading the attachment.');
+            return Response.error(
+                "A " +
+                    response.status +
+                    " error occurred while downloading the attachment."
+            );
         }
 
         try {
             const buf = await response.arrayBuffer();
-            const key = attachments[0].key != null ? attachments[0].key :
-                await this.cryptoService.getOrgKey(cipher.organizationId);
+            const key =
+                attachments[0].key != null
+                    ? attachments[0].key
+                    : await this.cryptoService.getOrgKey(cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            const filePath = await CliUtils.saveFile(Buffer.from(decBuf), cmd.output, attachments[0].fileName);
-            const res = new MessageResponse('Saved ' + filePath, null);
+            const filePath = await CliUtils.saveFile(
+                Buffer.from(decBuf),
+                cmd.output,
+                attachments[0].fileName
+            );
+            const res = new MessageResponse("Saved " + filePath, null);
             res.raw = filePath;
             return Response.success(res);
         } catch (e) {
-            if (typeof (e) === 'string') {
+            if (typeof e === "string") {
                 return Response.error(e);
             } else {
-                return Response.error('An error occurred while saving the attachment.');
+                return Response.error(
+                    "An error occurred while saving the attachment."
+                );
             }
         }
     }
@@ -303,11 +372,11 @@ export class GetCommand {
             if (folder != null) {
                 decFolder = await folder.decrypt();
             }
-        } else if (id.trim() !== '') {
+        } else if (id.trim() !== "") {
             let folders = await this.folderService.getAllDecrypted();
             folders = CliUtils.searchFolders(folders, id);
             if (folders.length > 1) {
-                return Response.multipleResults(folders.map((f) => f.id));
+                return Response.multipleResults(folders.map(f => f.id));
             }
             if (folders.length > 0) {
                 decFolder = folders[0];
@@ -328,11 +397,11 @@ export class GetCommand {
             if (collection != null) {
                 decCollection = await collection.decrypt();
             }
-        } else if (id.trim() !== '') {
+        } else if (id.trim() !== "") {
             let collections = await this.collectionService.getAllDecrypted();
             collections = CliUtils.searchCollections(collections, id);
             if (collections.length > 1) {
-                return Response.multipleResults(collections.map((c) => c.id));
+                return Response.multipleResults(collections.map(c => c.id));
             }
             if (collections.length > 0) {
                 decCollection = collections[0];
@@ -347,28 +416,46 @@ export class GetCommand {
     }
 
     private async getOrganizationCollection(id: string, cmd: program.Command) {
-        if (cmd.organizationid == null || cmd.organizationid === '') {
-            return Response.badRequest('--organizationid <organizationid> required.');
+        if (cmd.organizationid == null || cmd.organizationid === "") {
+            return Response.badRequest(
+                "--organizationid <organizationid> required."
+            );
         }
         if (!Utils.isGuid(id)) {
-            return Response.error('`' + id + '` is not a GUID.');
+            return Response.error("`" + id + "` is not a GUID.");
         }
         if (!Utils.isGuid(cmd.organizationid)) {
-            return Response.error('`' + cmd.organizationid + '` is not a GUID.');
+            return Response.error(
+                "`" + cmd.organizationid + "` is not a GUID."
+            );
         }
         try {
-            const orgKey = await this.cryptoService.getOrgKey(cmd.organizationid);
+            const orgKey = await this.cryptoService.getOrgKey(
+                cmd.organizationid
+            );
             if (orgKey == null) {
-                throw new Error('No encryption key for this organization.');
+                throw new Error("No encryption key for this organization.");
             }
 
-            const response = await this.apiService.getCollectionDetails(cmd.organizationid, id);
+            const response = await this.apiService.getCollectionDetails(
+                cmd.organizationid,
+                id
+            );
             const decCollection = new CollectionView(response);
             decCollection.name = await this.cryptoService.decryptToUtf8(
-                new CipherString(response.name), orgKey);
-            const groups = response.groups == null ? null :
-                response.groups.map((g) => new SelectionReadOnly(g.id, g.readOnly));
-            const res = new OrganizationCollectionResponse(decCollection, groups);
+                new CipherString(response.name),
+                orgKey
+            );
+            const groups =
+                response.groups == null
+                    ? null
+                    : response.groups.map(
+                          g => new SelectionReadOnly(g.id, g.readOnly)
+                      );
+            const res = new OrganizationCollectionResponse(
+                decCollection,
+                groups
+            );
             return Response.success(res);
         } catch (e) {
             return Response.error(e);
@@ -379,11 +466,11 @@ export class GetCommand {
         let org: Organization = null;
         if (Utils.isGuid(id)) {
             org = await this.userService.getOrganization(id);
-        } else if (id.trim() !== '') {
+        } else if (id.trim() !== "") {
             let orgs = await this.userService.getAllOrganizations();
             orgs = CliUtils.searchOrganizations(orgs, id);
             if (orgs.length > 1) {
-                return Response.multipleResults(orgs.map((c) => c.id));
+                return Response.multipleResults(orgs.map(c => c.id));
             }
             if (orgs.length > 0) {
                 org = orgs[0];
@@ -400,41 +487,41 @@ export class GetCommand {
     private async getTemplate(id: string) {
         let template: any = null;
         switch (id.toLowerCase()) {
-            case 'item':
+            case "item":
                 template = Cipher.template();
                 break;
-            case 'item.field':
+            case "item.field":
                 template = Field.template();
                 break;
-            case 'item.login':
+            case "item.login":
                 template = Login.template();
                 break;
-            case 'item.login.uri':
+            case "item.login.uri":
                 template = LoginUri.template();
                 break;
-            case 'item.card':
+            case "item.card":
                 template = Card.template();
                 break;
-            case 'item.identity':
+            case "item.identity":
                 template = Identity.template();
                 break;
-            case 'item.securenote':
+            case "item.securenote":
                 template = SecureNote.template();
                 break;
-            case 'folder':
+            case "folder":
                 template = Folder.template();
                 break;
-            case 'collection':
+            case "collection":
                 template = Collection.template();
                 break;
-            case 'item-collections':
-                template = ['collection-id1', 'collection-id2'];
+            case "item-collections":
+                template = ["collection-id1", "collection-id2"];
                 break;
-            case 'org-collection':
+            case "org-collection":
                 template = OrganizationCollectionRequest.template();
                 break;
             default:
-                return Response.badRequest('Unknown template object.');
+                return Response.badRequest("Unknown template object.");
         }
 
         const res = new TemplateResponse(template);
@@ -443,20 +530,25 @@ export class GetCommand {
 
     private async getFingerprint(id: string) {
         let fingerprint: string[] = null;
-        if (id === 'me') {
-            fingerprint = await this.cryptoService.getFingerprint(await this.userService.getUserId());
+        if (id === "me") {
+            fingerprint = await this.cryptoService.getFingerprint(
+                await this.userService.getUserId()
+            );
         } else if (Utils.isGuid(id)) {
             try {
                 const response = await this.apiService.getUserPublicKey(id);
                 const pubKey = Utils.fromB64ToArray(response.publicKey);
-                fingerprint = await this.cryptoService.getFingerprint(id, pubKey.buffer);
-            } catch { }
+                fingerprint = await this.cryptoService.getFingerprint(
+                    id,
+                    pubKey.buffer
+                );
+            } catch {}
         }
 
         if (fingerprint == null) {
             return Response.notFound();
         }
-        const res = new StringResponse(fingerprint.join('-'));
+        const res = new StringResponse(fingerprint.join("-"));
         return Response.success(res);
     }
 }
