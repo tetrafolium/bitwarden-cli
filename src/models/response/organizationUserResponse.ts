@@ -1,7 +1,7 @@
-import { BaseResponse } from 'jslib/cli/models/response/baseResponse';
+import { BaseResponse } from "jslib/cli/models/response/baseResponse";
 
-import { OrganizationUserStatusType } from 'jslib/enums/organizationUserStatusType';
-import { OrganizationUserType } from 'jslib/enums/organizationUserType';
+import { OrganizationUserStatusType } from "jslib/enums/organizationUserStatusType";
+import { OrganizationUserType } from "jslib/enums/organizationUserType";
 
 export class OrganizationUserResponse implements BaseResponse {
     object: string;
@@ -13,6 +13,6 @@ export class OrganizationUserResponse implements BaseResponse {
     twoFactorEnabled: boolean;
 
     constructor() {
-        this.object = 'org-member';
+        this.object = "org-member";
     }
 }

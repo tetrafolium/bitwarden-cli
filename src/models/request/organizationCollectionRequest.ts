@@ -1,14 +1,17 @@
-import { Collection } from 'jslib/models/export/collection';
+import { Collection } from "jslib/models/export/collection";
 
-import { SelectionReadOnly } from '../selectionReadOnly';
+import { SelectionReadOnly } from "../selectionReadOnly";
 
 export class OrganizationCollectionRequest extends Collection {
     static template(): OrganizationCollectionRequest {
         const req = new OrganizationCollectionRequest();
-        req.organizationId = '00000000-0000-0000-0000-000000000000';
-        req.name = 'Collection name';
+        req.organizationId = "00000000-0000-0000-0000-000000000000";
+        req.name = "Collection name";
         req.externalId = null;
-        req.groups = [SelectionReadOnly.template(), SelectionReadOnly.template()];
+        req.groups = [
+            SelectionReadOnly.template(),
+            SelectionReadOnly.template()
+        ];
         return req;
     }
 
